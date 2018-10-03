@@ -2,9 +2,9 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "wordpress-classic-repository",
+        "name": "wordpress-classic-repository-2",
 	"annotations": {
-            "openshift.io/display-name": "WordPress (Classic / Repository)",
+            "openshift.io/display-name": "WordPress (Classic / Repository) 2",
             "description": "Creates a WordPress installation. Plugins, themes and language files are incorporated from a source code repository. Requires that two persistent volumes be available. If a ReadWriteMany persistent volume type is available and used, WordPress can be scaled to multiple replicas and the deployment strategy switched to Rolling to permit rolling deployments on restarts.",
             "tags": "quickstart,php,wordpress",
             "iconClass": "icon-php"
@@ -14,7 +14,7 @@
         {
             "name": "APPLICATION_NAME",
             "description": "The name of the WordPress instance.",
-            "value": "my-wordpress-site",
+            "value": "mywordpresssite",
             "from": "[a-zA-Z0-9]",
             "required": true
         },
@@ -27,7 +27,7 @@
         {
             "name": "SOURCE_REPOSITORY_URL",
             "description": "The source repository containing plugins, themes and language files.",
-            "value": "",
+            "value": "https://github.com/isreehari/wpthemesplugins.git",
             "required": true
         },
         {
@@ -35,13 +35,75 @@
             "description": "The tagged version of the source repository to use.",
             "value": "master",
             "required": true
-        },       
+        },    
+        {
+            "name": "SOURCE_REPOSITORY_SECRET",
+            "description": "The source repository secret name.",
+            "value": "githubauth",
+            "required": true
+        },    
+           
         {
             "name": "WORDPRESS_DEPLOYMENT_STRATEGY",
             "description": "Type of the deployment strategy for Wordpress.",
-            "value": "Recreate",
+            "value": "Rolling",
+            "required": true
+        },
+        {
+            "name": "WORDPRESS_INSTALL_VERSION",
+            "description": "Wordpress installation version.",
+            "value": "4.1",
+            "required": true
+        }, 
+        {
+            "name": "WORDPRESS_MEMORY_LIMIT",
+            "description": "Wordpress memory limit.",
+            "value": "512Mi",
+            "required": true
+        }, 
+        
+        {
+            "name": "WORDPRESS_HOST_NAME",
+            "description": "Wordpress host name.",
+            "value": "ishari.org",
+            "required": true
+        }, 
+        {
+            "name": "WORDPRESS_DATA_VOLUME_NAME",
+            "description": "Type of the Data Volume name for Wordpress.",
+            "value": "wp-data",
             "required": true
         },        
+        {
+            "description": "The name of the database host.",
+            "name": "DATABASE_HOST",
+            "value": "mysql",
+            "required": true
+        },
+        {
+            "description": "The name of the database name.",
+            "name": "DATABASE_NAME",
+            "value": "sampledb",
+            "required": true
+        },
+        {
+            "description": "The name of the database user.",
+            "name": "DATABASE_USERNAME",
+            "value": "userRCD",
+            "required": true
+        },       
+        {
+            "description": "The password for the database password.",
+            "name": "DATABASE_PASSWORD",
+            "value": "0B0vjrfry2bnl5GE",
+            "required": true
+        },   
+        {
+            "description": "The name of the database table prefix.",
+            "name": "DATABASE_TABLE_PREFIX",
+            "value": "wp_",
+            "required": true
+        },     
         {
             "name": "PHP_VERSION",
             "description": "The version of the PHP builder.",
@@ -157,11 +219,41 @@
                     "git": {
                         "uri": "${SOURCE_REPOSITORY_URL}",
                         "ref": "${SOURCE_REPOSITORY_TAG}"
+                    },
+                    "sourceSecret": {
+                        "name": "${SOURCE_REPOSITORY_SECRET}"
                     }
                 },
                 "strategy": {
                     "type": "Source",
                     "sourceStrategy": {
+                        "env": [
+                            
+                                        {
+                                            "name": "WORDPRESS_INSTALL_VERSION",
+                                            "value": "${WORDPRESS_INSTALL_VERSION}"
+                                        },
+                                        {
+                                            "name": "MYSQL_DATABASE",
+                                            "value": "${DATABASE_NAME}"
+                                        },
+                                        {
+                                            "name": "MYSQL_USER",
+                                            "value": "${DATABASE_USERNAME}"
+                                        },
+                                        {
+                                            "name": "MYSQL_PASSWORD",
+                                            "value": "${DATABASE_PASSWORD}"
+                                        },
+                                        {
+                                            "name": "MYSQL_HOST",
+                                            "value": "${DATABASE_HOST}"
+                                        },
+                                        {
+                                            "name": "MYSQL_TABLE_PREFIX",
+                                            "value": "${DATABASE_TABLE_PREFIX}"
+                                        }
+                            ],
                         "from": {
                             "kind": "ImageStreamTag",
                             "name": "${APPLICATION_NAME}-s2i:latest"
@@ -219,7 +311,15 @@
                             "deploymentconfig": "${APPLICATION_NAME}"
                         }
                     },
-                    "spec": {                        
+                    "spec": {  
+                        "volumes": [
+                            {
+                                "name": "${WORDPRESS_DATA_VOLUME_NAME}-volume",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${WORDPRESS_DATA_VOLUME_NAME}"
+                                }
+                            }
+                        ],                      
                         "containers": [
                             {
                                 "name": "wordpress",
@@ -227,6 +327,10 @@
                                 "ports": [
                                                 {
                                                     "containerPort": 8080,
+                                                    "protocol": "TCP"
+                                                },
+                                                {
+                                                    "containerPort": 8443,
                                                     "protocol": "TCP"
                                                 }
                                             ],
@@ -268,32 +372,10 @@
                                                     "periodSeconds": 10,
                                                     "successThreshold": 1,
                                                     "timeoutSeconds": 1
-                                },
-                                "env": [
-                                            {
-                                                "name": "MYSQL_DATABASE",
-                                                "value": "wordpress"
-                                            },
-                                            {
-                                                "name": "MYSQL_USER",
-                                                "value": "${DATABASE_USERNAME}"
-                                            },
-                                            {
-                                                "name": "MYSQL_PASSWORD",
-                                                "value": "${DATABASE_PASSWORD}"
-                                            },
-                                            {
-                                                "name": "MYSQL_HOST",
-                                                "value": "${APPLICATION_NAME}-db"
-                                            },
-                                            {
-                                                "name": "MYSQL_TABLE_PREFIX",
-                                                "value": "wp_"
-                                            }
-                                ],
+                                },                                
                                 "volumeMounts": [
                                             {
-                                                "name": "data",
+                                                "name": "${WORDPRESS_DATA_VOLUME_NAME}-volume",
                                                 "mountPath": "/opt/app-root/src"
                                             }
                                 ]
@@ -315,10 +397,16 @@
             "spec": {
                 "ports": [
                     {
-                        "name": "8080-tcp",
+                        "name": "${APPLICATION_NAME}-8080-tcp",
                         "protocol": "TCP",
                         "port": 8080,
                         "targetPort": 8080
+                    },
+                    {
+                        "name": "${APPLICATION_NAME}-8443-tcp",
+                        "protocol": "TCP",
+                        "port": 8443,
+                        "targetPort": 8443
                     }
                 ],
                 "selector": {
@@ -337,18 +425,18 @@
                 }
             },
             "spec": {
-                "host": "",
+                "host": "${WORDPRESS_HOST_NAME}",
                 "to": {
                     "kind": "Service",
                     "name": "${APPLICATION_NAME}",
                     "weight": 100
                 },
                 "port": {
-                    "targetPort": 8080
+                    "targetPort": "${APPLICATION_NAME}-8080-tcp"
                 },
                 "tls": {
                     "termination": "edge",
-                    "insecureEdgeTerminationPolicy": "Allow"
+                    "insecureEdgeTerminationPolicy": "Redirect"
                 }
             }
         }
