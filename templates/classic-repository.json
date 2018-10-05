@@ -351,7 +351,7 @@
                                 "readinessProbe": {
                                                     "failureThreshold": 3,
                                                     "httpGet": {
-                                                        "path": "/wp-admin/install.php",
+                                                        "path": "index.php",
                                                         "port": 8080,
                                                         "scheme": "HTTP",
                                                         "httpHeaders": [
@@ -368,7 +368,7 @@
                                 "livenessProbe": {
                                                     "failureThreshold": 3,
                                                     "httpGet": {
-                                                    "path": "/wp-admin/install.php",
+                                                    "path": "index.php",
                                                     "port": 8080,
                                                     "scheme": "HTTP",
                                                     "httpHeaders": [
