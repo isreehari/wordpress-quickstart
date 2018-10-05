@@ -2,9 +2,9 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "wordpress-classic-repository-2",
+        "name": "wordpress-classic-repository",
 	"annotations": {
-            "openshift.io/display-name": "WordPress (Classic / Repository) 2",
+            "openshift.io/display-name": "WordPress (Classic / Repository)",
             "description": "Creates a WordPress installation. Plugins, themes and language files are incorporated from a source code repository. Requires that two persistent volumes be available. If a ReadWriteMany persistent volume type is available and used, WordPress can be scaled to multiple replicas and the deployment strategy switched to Rolling to permit rolling deployments on restarts.",
             "tags": "quickstart,php,wordpress",
             "iconClass": "icon-php"
@@ -21,7 +21,7 @@
         {
             "name": "QUICKSTART_REPOSITORY_URL",
             "description": "The URL of the quickstart Git repository.",
-            "value": "https://github.com/isreehari/wordpress-quickstart",
+            "value": "https://github.com/isreehari/wordpress-quickstart.git",
             "required": true
         },
         {
@@ -83,19 +83,19 @@
         {
             "description": "The name of the database name.",
             "name": "DATABASE_NAME",
-            "value": "sampledb",
+            "value": "spwp",
             "required": true
         },
         {
             "description": "The name of the database user.",
             "name": "DATABASE_USERNAME",
-            "value": "userRCD",
+            "value": "root",
             "required": true
         },       
         {
             "description": "The password for the database password.",
             "name": "DATABASE_PASSWORD",
-            "value": "0B0vjrfry2bnl5GE",
+            "value": "CbcKM3PENyyWkb03",
             "required": true
         },   
         {
@@ -144,11 +144,20 @@
                     "type": "Git",
                     "git": {
                         "uri": "${QUICKSTART_REPOSITORY_URL}"
+                    },
+                    "sourceSecret": {
+                        "name": "${SOURCE_REPOSITORY_SECRET}"
                     }
                 },
                 "strategy": {
                     "type": "Source",
                     "sourceStrategy": {
+                        "env": [                            
+                                    {
+                                        "name": "WORDPRESS_INSTALL_VERSION",
+                                        "value": "${WORDPRESS_INSTALL_VERSION}"
+                                    }
+                        ],
                         "from": {
                             "kind": "ImageStreamTag",
                             "namespace": "openshift",
