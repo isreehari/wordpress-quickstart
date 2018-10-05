@@ -14,7 +14,14 @@
         {
             "name": "APPLICATION_NAME",
             "description": "The name of the WordPress instance.",
-            "value": "mywordpresssite",
+            "value": "splessons",
+            "from": "[a-zA-Z0-9]",
+            "required": true
+        },
+        {
+            "name": "APPLICATION_ENV",
+            "description": "The name of the Application environment.",
+            "value": "udev",
             "from": "[a-zA-Z0-9]",
             "required": true
         },
@@ -25,13 +32,26 @@
             "required": true
         },
         {
+            "name": "QUICKSTART_REPOSITORY_REF",
+            "description": "The REF of the quickstart Git repository.",
+            "value": "master",
+            "required": false
+        },
+        {
+            "name": "QUICKSTART_REPOSITORY_SECRET",
+            "description": "The source repository secret name.",
+            "value": "gitlabsecret",
+            "required": true
+        }, 
+        
+        {
             "name": "SOURCE_REPOSITORY_URL",
             "description": "The source repository containing plugins, themes and language files.",
             "value": "https://github.com/isreehari/wpthemesplugins.git",
             "required": true
         },
         {
-            "name": "SOURCE_REPOSITORY_TAG",
+            "name": "SOURCE_REPOSITORY_REF",
             "description": "The tagged version of the source repository to use.",
             "value": "master",
             "required": true
@@ -39,7 +59,7 @@
         {
             "name": "SOURCE_REPOSITORY_SECRET",
             "description": "The source repository secret name.",
-            "value": "githubauth",
+            "value": "gitlabsecret",
             "required": true
         },    
            
@@ -49,19 +69,13 @@
             "value": "Rolling",
             "required": true
         },
-        {
-            "name": "WORDPRESS_INSTALL_VERSION",
-            "description": "Wordpress installation version.",
-            "value": "4.1",
-            "required": true
-        }, 
+       
         {
             "name": "WORDPRESS_MEMORY_LIMIT",
             "description": "Wordpress memory limit.",
             "value": "512Mi",
             "required": true
         }, 
-        
         {
             "name": "WORDPRESS_HOST_NAME",
             "description": "Wordpress host name.",
@@ -69,11 +83,35 @@
             "required": true
         }, 
         {
-            "name": "WORDPRESS_DATA_VOLUME_NAME",
-            "description": "Type of the Data Volume name for Wordpress.",
-            "value": "wp-data",
+            "name": "WORDPRESS_PRIVATE_DATA_VOLUME_NAME",
+            "description": "Name of Private Data Volume for Wordpress.",
+            "value": "private-udev-pvc-manual",
             "required": true
-        },        
+        },
+        {
+            "name": "WORDPRESS_UPLOADS_VOLUME_NAME",
+            "description": "Name of Uploads Volume for Wordpress.",
+            "value": "public-udev-pvc-manual-real",
+            "required": true
+        }, 
+        {
+            "name": "WORDPRESS_CACHE_VOLUME_NAME",
+            "description": "Name of Cache Volume for Wordpress.",
+            "value": "cache-udev-pvc-manual",
+            "required": true
+        }, 
+        {
+            "name": "WORDPRESS_TEMP_VOLUME_NAME",
+            "description": "Name of TEMP Volume for Wordpress.",
+            "value": "temp-udev-pvc-manual",
+            "required": true
+        },     
+        {
+            "name": "WORDPRESS_LOG_VOLUME_NAME",
+            "description": "Name of LOG Volume for Wordpress.",
+            "value": "logs-udev-pvc-manual",
+            "required": true
+        }, 
         {
             "description": "The name of the database host.",
             "name": "DATABASE_HOST",
@@ -143,21 +181,16 @@
                 "source": {
                     "type": "Git",
                     "git": {
-                        "uri": "${QUICKSTART_REPOSITORY_URL}"
+                        "uri": "${QUICKSTART_REPOSITORY_URL}",
+                        "ref": "${QUICKSTART_REPOSITORY_REF}"
                     },
                     "sourceSecret": {
-                        "name": "${SOURCE_REPOSITORY_SECRET}"
+                        "name": "${QUICKSTART_REPOSITORY_SECRET}"
                     }
                 },
                 "strategy": {
                     "type": "Source",
                     "sourceStrategy": {
-                        "env": [                            
-                                    {
-                                        "name": "WORDPRESS_INSTALL_VERSION",
-                                        "value": "${WORDPRESS_INSTALL_VERSION}"
-                                    }
-                        ],
                         "from": {
                             "kind": "ImageStreamTag",
                             "namespace": "openshift",
@@ -227,7 +260,7 @@
                     "type": "Git",
                     "git": {
                         "uri": "${SOURCE_REPOSITORY_URL}",
-                        "ref": "${SOURCE_REPOSITORY_TAG}"
+                        "ref": "${SOURCE_REPOSITORY_REF}"
                     },
                     "sourceSecret": {
                         "name": "${SOURCE_REPOSITORY_SECRET}"
@@ -323,11 +356,36 @@
                     "spec": {  
                         "volumes": [
                             {
-                                "name": "${WORDPRESS_DATA_VOLUME_NAME}-volume",
+                                "name": "${WORDPRESS_PRIVATE_DATA_VOLUME_NAME}-pv",
                                 "persistentVolumeClaim": {
                                     "claimName": "${WORDPRESS_DATA_VOLUME_NAME}"
                                 }
+                            },
+                            {
+                                "name": "${WORDPRESS_UPLOADS_VOLUME_NAME}-pv",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${WORDPRESS_UPLOADS_VOLUME_NAME}"
+                                }
+                            },
+                            {
+                                "name": "${WORDPRESS_CACHE_VOLUME_NAME}-pv",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${WORDPRESS_CACHE_VOLUME_NAME}"
+                                }
+                            },
+                            {
+                                "name": "${WORDPRESS_TEMP_VOLUME_NAME}-pv",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${WORDPRESS_TEMP_VOLUME_NAME}"
+                                }
+                            },
+                            {
+                                "name": "${WORDPRESS_LOG_VOLUME_NAME}-pv",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${WORDPRESS_LOG_VOLUME_NAME}"
+                                }
                             }
+
                         ],                      
                         "containers": [
                             {
@@ -384,8 +442,29 @@
                                 },                                
                                 "volumeMounts": [
                                             {
-                                                "name": "${WORDPRESS_DATA_VOLUME_NAME}-volume",
-                                                "mountPath": "/opt/app-root/src"
+                                                "name": "${WORDPRESS_PRIVATE_DATA_VOLUME_NAME}-pv",
+                                                "mountPath": "/opt/app-root/src",
+                                                "subPath": "c81e728d9d4c2f636f067f89cc14862c"
+                                            },
+                                            {
+                                                "name": "${WORDPRESS_UPLOADS_VOLUME_NAME}-pv",
+                                                "mountPath": "/opt/app-root/src/wp-content/uploads",
+                                                "subPath": "c81e728d9d4c2f636f067f89cc14862c"
+                                            },
+                                            {
+                                                "name": "${WORDPRESS_CACHE_VOLUME_NAME}-pv",
+                                                "mountPath": "/opt/app-root/src/wp-content/cache",
+                                                "subPath": "c81e728d9d4c2f636f067f89cc14862c"
+                                            },
+                                            {
+                                                "name": "${WORDPRESS_TEMP_VOLUME_NAME}-pv",
+                                                "mountPath": "/opt/app-root/src",
+                                                "subPath": "c81e728d9d4c2f636f067f89cc14862c"
+                                            },
+                                            {
+                                                "name": "${WORDPRESS_LOG_VOLUME_NAME}-pv",
+                                                "mountPath": "/opt/app-root/src",
+                                                "subPath": "c81e728d9d4c2f636f067f89cc14862c"
                                             }
                                 ]
                             }
