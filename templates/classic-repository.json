@@ -19,10 +19,16 @@
             "required": true
         },
         {
-            "name": "APPLICATION_ENV",
+            "name": "CDN_URL",
             "description": "The name of the Application environment.",
             "value": "udev",
             "from": "[a-zA-Z0-9]",
+            "required": true
+        },
+        {
+            "name": "APPLICATION_ENV",
+            "description": "The name of the Application environment.",
+            "value": "https://cdn.udev.splessons.com/spf/c81e728d9d4c2f636f067f89cc14862c",
             "required": true
         },
         {
@@ -247,6 +253,22 @@
                                 "value": "${APPLICATION_ENV}"
                             },
                             {
+                                "name": "CDN_URL",
+                                "value": "${CDN_URL}"
+                            },
+                            {
+                                "name": "WP_CACHE",
+                                "value": "true"
+                            },
+                            {
+                                "name": "W3TC_EDGE_MODE",
+                                "value": "true"
+                            },
+                            {
+                                "name": "UBERMENU_AUTO_UPDATES",
+                                "value": "1"
+                            },
+                            {
                                 "name": "WP_DATABASE_NAME",
                                 "value": "${DATABASE_NAME}"
                             },
@@ -263,25 +285,61 @@
                                 "value": "${DATABASE_HOST}"
                             },
                             {
-                                "name": "MYSQL_TABLE_PREFIX",
+                                "name": "AUTH_KEY",
+                                "value": "><E.[ikR@{zt,tHaU|3DX>JZ%EQo* O?e%?eXGg#-p&p!C$NjC.bMuy%^S@L>owi"
+                            },
+                            {
+                                "name": "SECURE_AUTH_KEY",
+                                "value": "`1VQr9R9yi1%:1x/L*]nNj=N:58pP^-Z|u-cUsQPG;)mKNXmS:&qMVhxhy+B]0]6"
+                            },
+                            {
+                                "name": "LOGGED_IN_KEY",
+                                "value": ",9,]#.x{d.o2eV*PtJ8(ay0&ZU}G?lOqZA#OXAh04Y 5Z1T~RYM&8Fy`U;;*J_Zs"
+                            },
+                            {
+                                "name": "NONCE_KEY",
+                                "value": "{GDB?H^wxZSWv#;!RE3#Zk^0I $p/7,I]rDGhb^P83|3P=;vsgph+y2;8oQ,eG`P"
+                            },
+                            {
+                                "name": "AUTH_SALT",
+                                "value": "aAKc}I21tl{GP4QGyJiY]|TnQEc_Q:%oV$-dnx!=0{9d0%U$Yfb!>n@@tdyB7-[5"
+                            },
+                            {
+                                "name": "SECURE_AUTH_SALT",
+                                "value": "%`Ud;dp/zc+H.%5HJBZZF[@&PG`$2cG;FV/~g&L nZ|s,6H?MI~>HJ~^)`:}b`=O"
+                            },
+                            {
+                                "name": "LOGGED_IN_SALT",
+                                "value": "<U7E!l*?@K==xlKG%2hT+x-^BWp,^*67dY2K{x:Zv-3~]f92a8+S?/JJZG]ZYCU-"
+                            },
+                            {
+                                "name": "NONCE_SALT",
+                                "value": "/XtkJg@`LSfC/v>CqtMi LeVVEA#v]]0=~iAt3eTfXBKux<[I<6`zdY+[[&DLuDw"
+                            },
+
+                            {
+                                "name": "WP_TABLE_PREFIX",
                                 "value": "${DATABASE_TABLE_PREFIX}"
                             },
+
                             {
-                                "name": "WP_CACHE",
+                                "name": "WPLANG",
+                                "value": "/XtkJg@`LSfC/v>CqtMi LeVVEA#v]]0=~iAt3eTfXBKux<[I<6`zdY+[[&DLuDw"
+                            },
+                            {
+                                "name": "WP_DEBUG",
                                 "value": "true"
                             },
                             {
-                                "name": "W3TC_EDGE_MODE",
-                                "value": "true"
+                                "name": "WP_DEBUG_DISPLAY",
+                                "value": "false"
                             },
                             {
-                                "name": "UBERMENU_AUTO_UPDATES",
-                                "value": "1"
-                            },
-                            {
-                                "name": "W3TC_EDGE_MODE",
+                                "name": "WP_DEBUG_LOG",
                                 "value": "true"
                             },
+                           
+                            
                             ],
                         "from": {
                             "kind": "ImageStreamTag",
