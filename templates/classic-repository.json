@@ -111,37 +111,7 @@
             "description": "Name of LOG Volume for Wordpress.",
             "value": "logs-udev-pvc-manual",
             "required": true
-        }, 
-        {
-            "description": "The name of the database host.",
-            "name": "DATABASE_HOST",
-            "value": "mysql",
-            "required": true
-        },
-        {
-            "description": "The name of the database name.",
-            "name": "DATABASE_NAME",
-            "value": "spwp",
-            "required": true
-        },
-        {
-            "description": "The name of the database user.",
-            "name": "DATABASE_USERNAME",
-            "value": "root",
-            "required": true
-        },       
-        {
-            "description": "The password for the database password.",
-            "name": "DATABASE_PASSWORD",
-            "value": "CbcKM3PENyyWkb03",
-            "required": true
-        },   
-        {
-            "description": "The name of the database table prefix.",
-            "name": "DATABASE_TABLE_PREFIX",
-            "value": "wp_",
-            "required": true
-        },     
+        },    
         {
             "name": "PHP_VERSION",
             "description": "The version of the PHP builder.",
@@ -270,31 +240,48 @@
                     "type": "Source",
                     "sourceStrategy": {
                         "env": [
+                                        
                             
-                                        {
-                                            "name": "WORDPRESS_INSTALL_VERSION",
-                                            "value": "${WORDPRESS_INSTALL_VERSION}"
-                                        },
-                                        {
-                                            "name": "MYSQL_DATABASE",
-                                            "value": "${DATABASE_NAME}"
-                                        },
-                                        {
-                                            "name": "MYSQL_USER",
-                                            "value": "${DATABASE_USERNAME}"
-                                        },
-                                        {
-                                            "name": "MYSQL_PASSWORD",
-                                            "value": "${DATABASE_PASSWORD}"
-                                        },
-                                        {
-                                            "name": "MYSQL_HOST",
-                                            "value": "${DATABASE_HOST}"
-                                        },
-                                        {
-                                            "name": "MYSQL_TABLE_PREFIX",
-                                            "value": "${DATABASE_TABLE_PREFIX}"
-                                        }
+                            {
+                                "name": "APPLICATION_ENV",
+                                "value": "${APPLICATION_ENV}"
+                            },
+                            {
+                                "name": "WP_DATABASE_NAME",
+                                "value": "${DATABASE_NAME}"
+                            },
+                            {
+                                "name": "WP_DATABASE_USER_NAME",
+                                "value": "${DATABASE_USERNAME}"
+                            },
+                            {
+                                "name": "WP_DATABASE_USER_PASS",
+                                "value": "${DATABASE_PASSWORD}"
+                            },
+                            {
+                                "name": "WP_DATABASE_HOST",
+                                "value": "${DATABASE_HOST}"
+                            },
+                            {
+                                "name": "MYSQL_TABLE_PREFIX",
+                                "value": "${DATABASE_TABLE_PREFIX}"
+                            },
+                            {
+                                "name": "WP_CACHE",
+                                "value": "true"
+                            },
+                            {
+                                "name": "W3TC_EDGE_MODE",
+                                "value": "true"
+                            },
+                            {
+                                "name": "UBERMENU_AUTO_UPDATES",
+                                "value": "1"
+                            },
+                            {
+                                "name": "W3TC_EDGE_MODE",
+                                "value": "true"
+                            },
                             ],
                         "from": {
                             "kind": "ImageStreamTag",
